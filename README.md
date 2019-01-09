@@ -29,6 +29,24 @@ sensor:
     longitude: !secret long_coord
     radius: 100
 ```
+**Example automation for getting a notification when the sensor has an alert:**
+
+```yaml
+automation:
+  - alias: 'Krisinformation Alert'
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: sensor.krisinformation
+      to: "Alert"
+    action:
+      - service: notify.my_phone
+        data_template:
+          message: >
+            {{states.sensor.krisinformation_stockholm.attributes.messages[0].Headline}} - {{states.sensor.krisinformation_stockholm.attributes.messages[0].Message}} {{states.sensor.krisinformation_stockholm.attributes.messages[0].Web}}
+```
+
+
 
 **Configuration variables:**
 
