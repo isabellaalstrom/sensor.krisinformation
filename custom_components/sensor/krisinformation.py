@@ -33,7 +33,7 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -128,7 +128,9 @@ class KrisinformationAPI:
             response = urlopen('https://api.krisinformation.se/v2/feed?format=json')
             data = response.read().decode('utf-8')
             jsondata = json.loads(data)
+
             self.data['state'] = "No new messages"
+            self.attributes["messages"] = []
             for index, element in enumerate(jsondata):
                 self.make_object(index = index, element = element)
             
@@ -142,7 +144,7 @@ class KrisinformationAPI:
     def make_object(self, index, element):
         message = {}
         message['Area'] = []
-        self.attributes["messages"] = []
+        
         distance = None
         within_range = False
         
