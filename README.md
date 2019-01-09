@@ -60,7 +60,7 @@ automation:
     initial_state: 'on'
     trigger:
       platform: state
-      entity_id: sensor.krisinformation
+      entity_id: sensor.krisinformation_stockholm
       to: "Alert"
     action:
       - service: notify.my_phone
