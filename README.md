@@ -17,7 +17,7 @@ If one of the fetched messages is an alert as opposed to news, the state of the 
 2. Add the code to your `configuration.yaml` using the config options below.
 3. **You will need to restart after installation for the component to start working.**
 
-* If you're having issues, post an issue or ask for help on the forums.
+* If you're having issues, [ask for help on the forums](https://community.home-assistant.io/t/custom-component-krisinformation-sweden/90340) or post an issue.
 
 **Example configuration.yaml:**
 
