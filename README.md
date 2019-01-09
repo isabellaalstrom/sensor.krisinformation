@@ -12,6 +12,7 @@ Will get all messages from [Krisinformations api](http://api.krisinformation.se/
 If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects.
 
 Use together with [custom card for Lovelace](https://github.com/isabellaalstrom/krisinfo-card).
+<img src="https://github.com/isabellaalstrom/krisinfo-card/blob/master/krisinfo.png" alt="Krisinformation Lovelace Card" />
 
 This component is supported by [Custom updater and Tracker card](https://github.com/custom-components/custom_updater).
 
