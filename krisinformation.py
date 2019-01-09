@@ -1,9 +1,9 @@
 """
-v.0.1.0
+v.0.0.2
 
 Support for getting data from krisinformation.se.
 
-Data is fetched from http://api.krisinformation.se/v1/capmessage?format=json
+Data is fetched from https://api.krisinformation.se/v1/capmessage?format=json
 
 
 Example configuration
@@ -109,9 +109,6 @@ class KrisinformationAPI:
     def __init__(self, longitude, latitude, radius):
         """Initialize the data object."""
         
-        resource = 'http://api.krisinformation.se/v2/feed?format=json'
-        self._rest = RestData('GET', resource, None, None, None, True)
-        
         self.slat = latitude
         self.slon = longitude
         self.radius = radius
@@ -120,20 +117,20 @@ class KrisinformationAPI:
         self.data = {}
         self.available = True
         self.update()
+        self.data['state'] = "No new messages"
 
     @Throttle(SCAN_INTERVAL)
     def update(self):
         """Get the latest data from Krisinformation."""
         try:
             _LOGGER.debug("Trying to update")
-            self._rest.update()
-            response = urlopen('http://api.krisinformation.se/v2/feed?format=json')
+            response = urlopen('https://api.krisinformation.se/v2/feed?format=json')
             data = response.read().decode('utf-8')
             jsondata = json.loads(data)
-
+            self.data['state'] = "No new messages"
             for index, element in enumerate(jsondata):
                 self.make_object(index = index, element = element)
-                
+            
             self.data['attributes'] = self.attributes
             self.available = True
         except Exception as e:
