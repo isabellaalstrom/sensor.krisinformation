@@ -9,7 +9,7 @@
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
 
 Will get all messages from [Krisinformations api](http://api.krisinformation.se/v2/feed?format=json) in a set radius from your coordinates.
-If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects. You can get the first message with template: `{{states.sensor.krisinformation.attributes.messages[0]}}`. Examples of usage will come in the near future.
+If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects.
 
 ## Installation:
 
@@ -18,6 +18,19 @@ If one of the fetched messages is an alert as opposed to news, the state of the 
 3. **You will need to restart after installation for the component to start working.**
 
 * If you're having issues, [ask for help on the forums](https://community.home-assistant.io/t/custom-component-krisinformation-sweden/90340) or post an issue.
+
+**Configuration variables:**
+
+key | type | description
+:--- | :--- | :---
+**platform (Required)** | string | `krisinformation`
+**latitude (Required)** | sring | The latitude of the position from which the sensor should look for messages.
+**longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
+**name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
+**radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
+
+
+
 
 **Example configuration.yaml:**
 
@@ -29,6 +42,11 @@ sensor:
     longitude: !secret long_coord
     radius: 100
 ```
+
+***
+
+## Usage
+
 **Example automation for getting a notification when the sensor has an alert:**
 
 ```yaml
@@ -45,17 +63,3 @@ automation:
           message: >
             {{states.sensor.krisinformation_stockholm.attributes.messages[0].Headline}} - {{states.sensor.krisinformation_stockholm.attributes.messages[0].Message}} {{states.sensor.krisinformation_stockholm.attributes.messages[0].Web}}
 ```
-
-
-
-**Configuration variables:**
-
-key | type | description
-:--- | :--- | :---
-**platform (Required)** | string | `krisinformation`
-**latitude (Required)** | sring | The latitude of the position from which the sensor should look for messages.
-**longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
-**name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
-**radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
-
-***
