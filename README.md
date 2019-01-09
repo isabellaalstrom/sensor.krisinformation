@@ -6,7 +6,10 @@
 [![maintainer](https://img.shields.io/badge/maintainer-ISabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
 
 # sensor.krisinformation
-Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/)
+Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
+
+Will get all messages from [Krisinformations api](http://api.krisinformation.se/v2/feed?format=json) in a set radius from your coordinates.
+If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects. You can get the first message with template: `{{states.sensor.krisinformation.attributes.messages[0]}}`. Examples of usage will come in the near future.
 
 ## Installation:
 
