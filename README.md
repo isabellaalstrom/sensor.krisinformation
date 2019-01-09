@@ -1,3 +1,6 @@
+![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg?style=for-the-badge)
+
+
 [![Version](https://img.shields.io/badge/version-0.1.0-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
 
 [![maintainer](https://img.shields.io/badge/maintainer-ISabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
@@ -30,6 +33,6 @@ key | type | description
 **platform (Required)** | string | `krisinformation`
 **latitude (Required)** | sring | The latitude of the position from which the sensor should look for messages.
 **longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
-**radius (Optional)** | number | The redius from your position that the sensor should look for messages. Default `50`
+**radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
 
 ***
