@@ -11,6 +11,8 @@ Component to get Krisinformation for [Home Assistant](https://www.home-assistant
 Will get all messages from [Krisinformations api](http://api.krisinformation.se/v2/feed?format=json) in a set radius from your coordinates.
 If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects.
 
+This component is supported by [Custom updater and Tracker card](https://github.com/custom-components/custom_updater).
+
 ## Installation:
 
 1. Install this component by copying to your `/custom_components/sensor/` folder.
@@ -28,8 +30,6 @@ key | type | description
 **longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
 **name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
-
-
 
 
 **Example configuration.yaml:**
