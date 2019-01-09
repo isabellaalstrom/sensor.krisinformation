@@ -11,6 +11,8 @@ Component to get Krisinformation for [Home Assistant](https://www.home-assistant
 Will get all messages from [Krisinformations api](http://api.krisinformation.se/v2/feed?format=json) in a set radius from your coordinates.
 If one of the fetched messages is an alert as opposed to news, the state of the sensor will be "Alert". The sensor contains all fetched messages as objects.
 
+Use together with [custom card for Lovelace](https://github.com/isabellaalstrom/krisinfo-card).
+
 This component is supported by [Custom updater and Tracker card](https://github.com/custom-components/custom_updater).
 
 ## Installation:
