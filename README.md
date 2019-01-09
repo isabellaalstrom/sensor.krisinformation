@@ -24,6 +24,7 @@ If one of the fetched messages is an alert as opposed to news, the state of the 
 ```yaml
 sensor:
   - platform: krisinformation
+    name: Krisinformation Stockholm
     latitude: !secret lat_coord
     longitude: !secret long_coord
     radius: 100
@@ -36,6 +37,7 @@ key | type | description
 **platform (Required)** | string | `krisinformation`
 **latitude (Required)** | sring | The latitude of the position from which the sensor should look for messages.
 **longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
+**name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
 
 ***
