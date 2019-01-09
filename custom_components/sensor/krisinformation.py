@@ -1,5 +1,4 @@
 """
-v.0.0.2
 
 Support for getting data from krisinformation.se.
 
@@ -33,6 +32,8 @@ from homeassistant.const import (
 from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
+
+__version__ = '0.0.3'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -141,6 +142,7 @@ class KrisinformationAPI:
     def make_object(self, index, element):
         message = {}
         message['Area'] = []
+        self.attributes["messages"] = []
         distance = None
         within_range = False
         
