@@ -68,3 +68,7 @@ automation:
           message: >
             {{states.sensor.krisinformation_stockholm.attributes.messages[0].Headline}} - {{states.sensor.krisinformation_stockholm.attributes.messages[0].Message}} {{states.sensor.krisinformation_stockholm.attributes.messages[0].Web}}
 ```
+
+Like my work and want to say thanks? Do it here:
+
+<a href="https://www.buymeacoffee.com/iq1f96D" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
