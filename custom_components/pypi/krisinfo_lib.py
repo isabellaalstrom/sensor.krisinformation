@@ -3,18 +3,18 @@ import json
 import aiohttp
 from urllib.request import urlopen
 from math import radians, sin, cos, acos
-
+import abc
 _LOGGER = logging.getLogger(__name__)
 
-class KrisInformation():
 
+class Krisinformation():
     # initialize with all props
     def __init__(
             self, id: str, push_message: str, updated: str,
             published: str, headline: str, preamble: str,
             body_text: str, web: str, language: str,
             event: str, sender_name: str, source_id: str,
-            area: array, links: array) -> None:
+            area: List[Dict[str, str]], links: List[str]) -> None:
         """Constructor"""
         self._id = id
         self._push_message = push_message
@@ -40,7 +40,7 @@ class KrisInformation():
     def push_message(self) -> str:
         """push_message of the message"""
         return self._push_message
-    
+
     @property
     def updated(self) -> str:
         return self.self_updated
@@ -52,27 +52,27 @@ class KrisInformation():
     @property
     def headline(self) -> str:
         return self._headline
-    
+
     @property
     def preamble(self) -> str:
         return self._preamble
-    
+
     @property
     def body_text(self) -> str:
         return self._body_text
-    
+
     @property
     def web(self) -> str:
         return self._web
-    
+
     @property
     def language(self) -> str:
         return self._language
-    
+
     @property
     def event(self) -> str:
         return self._event
-    
+
     @property
     def sender_name(self) -> str:
         return self._sender_name
@@ -80,22 +80,39 @@ class KrisInformation():
     @property
     def source_id(self) -> str:
         return self._source_id
-    
+
     @property
-    def area(self) -> array:
+    def area(self) -> List[Dict[str, str]]:
         return self._area
-    
+
     @property
-    def links(self) -> array:
+    def links(self) -> List[str]:
         return self._links
 
 
-class KrisInformationAPI:
+class KrisinformationAPIBase():
+    """Baseclass."""
+    @abc.abstractmethod
+    def get_messages_api(self, longitude: str, latitude: str) -> {}:
+        """Override this"""
+        raise NotImplementedError(
+            'users must define get_messages to use this base class')
+
+    @abc.abstractmethod
+    async def async_get_messages_api(self, longitude: str, latitude: str) -> {}:
+        """Override this"""
+        raise NotImplementedError(
+            'users must define async_get_messages to use this base class')
+
+# pylint: disable=R0903
+
+
+class KrisinformationAPI(KrisinformationAPIBase):
     """Get the latest data and update the states."""
 
     def __init__(self, longitude, latitude, radius):
         """Initialize the data object."""
-        
+
         self.slat = latitude
         self.slon = longitude
         self.radius = radius
@@ -111,35 +128,37 @@ class KrisInformationAPI:
         """Get the latest data from Krisinformation."""
         try:
             _LOGGER.debug("Trying to update")
-            response = urlopen('https://api.krisinformation.se/v2/feed?format=json')
+            response = urlopen(
+                'https://api.krisinformation.se/v2/feed?format=json')
             data = response.read().decode('utf-8')
             jsondata = json.loads(data)
 
             self.data['state'] = "No new messages"
             self.attributes["messages"] = []
             for index, element in enumerate(jsondata):
-                self.make_object(index = index, element = element)
-            
+                self.make_object(index=index, element=element)
+
             self.data['attributes'] = self.attributes
             self.available = True
         except Exception as e:
             _LOGGER.error("Unable to fetch data from Krisinformation.")
             _LOGGER.error(str(e))
             self.available = False
-            
+
     def make_object(self, index, element):
         message = {}
         message['Area'] = []
-        
+
         distance = None
         within_range = False
-        
+
         for count, area in enumerate(element['Area']):
-            message['Area'].append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
-            distance = self.calculate_distance(coords = area['Coordinate'])
+            message['Area'].append(
+                {"Type": area['Type'], "Description": area['Description'], "Coordinate": area['Coordinate']})
+            distance = self.calculate_distance(coords=area['Coordinate'])
             if float(distance) < float(self.radius):
                 within_range = True
-        
+
         if within_range:
             message['ID'] = element['Identifier']
             message['Message'] = element['PushMessage']
@@ -157,36 +176,37 @@ class KrisInformationAPI:
                 message['Links'].append(link['Url'])
             message['SourceID'] = element['SourceID']
             # _LOGGER.error(message)
-            
+
             self.attributes["messages"].append(message)
             if element['Event'] == "Alert":
                 self.state = "Alert"
             else:
                 self.state = "News"
             self.data['state'] = self.state
-            
+
     def calculate_distance(self, coords):
         coords = coords.split()
         coords = coords[0].split(',')
         elon = coords[0]
         elat = coords[1]
-        
-        #Convert coordinates to radians
+
+        # Convert coordinates to radians
         elat2 = radians(float(elat))
         slat2 = radians(float(self.slat))
         elon2 = radians(float(elon))
         slon2 = radians(float(self.slon))
-        
-        #Calculate the distance between them
-        dist = 6371.01 * acos(sin(slat2)*sin(elat2) + cos(slat2)*cos(elat2)*cos(slon2 - elon2))
+
+        # Calculate the distance between them
+        dist = 6371.01 * acos(sin(slat2)*sin(elat2) +
+                              cos(slat2)*cos(elat2)*cos(slon2 - elon2))
 
         return dist
 
 
-class KrisInformation():
+class Krisinformation():
     def __init__(self, longitude: str, latitude: str, radius: str,
                  session: aiohttp.ClientSession = None,
-                 api: KrisInformationAPI()) -> None:
+                 api: KrisinformationAPI()) -> None:
         self._longitude = str(round(float(longitude), 6))
         self._latitude = str(round(float(latitude), 6))
         self.radius = radius
