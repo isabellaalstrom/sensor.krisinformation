@@ -33,13 +33,13 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Krisinformation'
 
-SCAN_INTERVAL = timedelta(minutes=1)
+SCAN_INTERVAL = timedelta(minutes=5)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
@@ -167,10 +167,10 @@ class KrisinformationAPI:
             message['Event'] = element['Event']
             message['SenderName'] = element['SenderName']
             message['Links'] = []
-            for numbers, link in enumerate(element['BodyLinks']):
-                message['Links'].append(link['Url'])
+            if element['BodyLinks'] is not None:
+                for numbers, link in enumerate(element['BodyLinks']):
+                    message['Links'].append(link['Url'])
             message['SourceID'] = element['SourceID']
-            # _LOGGER.error(message)
             
             self.attributes["messages"].append(message)
             if element['Event'] == "Alert":
