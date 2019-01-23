@@ -1,20 +1,30 @@
-import logging
 import json
-import aiohttp
-from urllib.request import urlopen
-from math import radians, sin, cos, acos
+from typing import List
+
 import abc
+from datetime import datetime
+
+from urllib.request import urlopen
+import aiohttp
+from math import radians, sin, cos, acos
+import logging
+
 _LOGGER = logging.getLogger(__name__)
 
+API_URL = 'https://api.krisinformation.se/v2/feed?format=json'
 
-class Krisinformation():
+class KrisinformationException(Exception):
+    """Exception thrown if failing to access API"""
+    pass
+
+class KrisinformationMessage():
     # initialize with all props
     def __init__(
             self, id: str, push_message: str, updated: str,
             published: str, headline: str, preamble: str,
             body_text: str, web: str, language: str,
             event: str, sender_name: str, source_id: str,
-            area: List[Dict[str, str]], links: List[str]) -> None:
+            area: List[dict], links: List[str]) -> None:
         """Constructor"""
         self._id = id
         self._push_message = push_message
@@ -43,7 +53,7 @@ class Krisinformation():
 
     @property
     def updated(self) -> str:
-        return self.self_updated
+        return self._updated
 
     @property
     def published(self) -> str:
@@ -82,7 +92,7 @@ class Krisinformation():
         return self._source_id
 
     @property
-    def area(self) -> List[Dict[str, str]]:
+    def area(self) -> List[dict]:
         return self._area
 
     @property
@@ -93,126 +103,120 @@ class Krisinformation():
 class KrisinformationAPIBase():
     """Baseclass."""
     @abc.abstractmethod
-    def get_messages_api(self, longitude: str, latitude: str) -> {}:
+    def get_messages_api(self) -> {}:
         """Override this"""
         raise NotImplementedError(
             'users must define get_messages to use this base class')
 
     @abc.abstractmethod
-    async def async_get_messages_api(self, longitude: str, latitude: str) -> {}:
+    async def async_get_messages_api(self) -> {}:
         """Override this"""
         raise NotImplementedError(
             'users must define async_get_messages to use this base class')
 
+
 # pylint: disable=R0903
-
-
 class KrisinformationAPI(KrisinformationAPIBase):
-    """Get the latest data and update the states."""
+    """Default implementation for Krisinformation API"""
 
-    def __init__(self, longitude, latitude, radius):
-        """Initialize the data object."""
+    def __init__(self) -> None:
+        """Init the API with or without session"""
+        self.session = None
 
-        self.slat = latitude
-        self.slon = longitude
-        self.radius = radius
-        self.attributes = {}
-        self.attributes["messages"] = []
-        self.data = {}
-        self.available = True
-        self.update()
-        self.data['state'] = "No new messages"
+    def get_messages_api(self):
+        """gets data from API"""
+        api_url = API_URL
+        response = urlopen(api_url)
+        data = response.read().decode('utf-8')
+        jsondata = json.loads(data)
+        return jsondata
 
-    @Throttle(SCAN_INTERVAL)
-    def update(self):
-        """Get the latest data from Krisinformation."""
-        try:
-            _LOGGER.debug("Trying to update")
-            response = urlopen(
-                'https://api.krisinformation.se/v2/feed?format=json')
-            data = response.read().decode('utf-8')
-            jsondata = json.loads(data)
-
-            self.data['state'] = "No new messages"
-            self.attributes["messages"] = []
-            for index, element in enumerate(jsondata):
-                self.make_object(index=index, element=element)
-
-            self.data['attributes'] = self.attributes
-            self.available = True
-        except Exception as e:
-            _LOGGER.error("Unable to fetch data from Krisinformation.")
-            _LOGGER.error(str(e))
-            self.available = False
-
-    def make_object(self, index, element):
-        message = {}
-        message['Area'] = []
-
-        distance = None
-        within_range = False
-
-        for count, area in enumerate(element['Area']):
-            message['Area'].append(
-                {"Type": area['Type'], "Description": area['Description'], "Coordinate": area['Coordinate']})
-            distance = self.calculate_distance(coords=area['Coordinate'])
-            if float(distance) < float(self.radius):
-                within_range = True
-
-        if within_range:
-            message['ID'] = element['Identifier']
-            message['Message'] = element['PushMessage']
-            message['Updated'] = element['Updated']
-            message['Published'] = element['Published']
-            message['Headline'] = element['Headline']
-            message['Preamble'] = element['Preamble']
-            message['BodyText'] = element['BodyText']
-            message['Web'] = element['Web']
-            message['Language'] = element['Language']
-            message['Event'] = element['Event']
-            message['SenderName'] = element['SenderName']
-            message['Links'] = []
-            for numbers, link in enumerate(element['BodyLinks']):
-                message['Links'].append(link['Url'])
-            message['SourceID'] = element['SourceID']
-            # _LOGGER.error(message)
-
-            self.attributes["messages"].append(message)
-            if element['Event'] == "Alert":
-                self.state = "Alert"
-            else:
-                self.state = "News"
-            self.data['state'] = self.state
-
-    def calculate_distance(self, coords):
-        coords = coords.split()
-        coords = coords[0].split(',')
-        elon = coords[0]
-        elat = coords[1]
-
-        # Convert coordinates to radians
-        elat2 = radians(float(elat))
-        slat2 = radians(float(self.slat))
-        elon2 = radians(float(elon))
-        slon2 = radians(float(self.slon))
-
-        # Calculate the distance between them
-        dist = 6371.01 * acos(sin(slat2)*sin(elat2) +
-                              cos(slat2)*cos(elat2)*cos(slon2 - elon2))
-
-        return dist
-
+    async def async_get_messages_api(self):
+        """gets data from API async"""
+        api_url = API_URL
+        if self.session is None:
+            self.session = aiohttp.ClientSession()
+        async with self.session.get(api_url) as response:
+            if response.status != 200:
+                raise KrisinformationException("Failed to access krisinformation API with status code {}".format(response.status))
+            data = await response.text()
+        return json.loads(data)
 
 class Krisinformation():
     def __init__(self, longitude: str, latitude: str, radius: str,
                  session: aiohttp.ClientSession = None,
-                 api: KrisinformationAPI()) -> None:
+                 api: KrisinformationAPIBase = KrisinformationAPI()) -> None:
         self._longitude = str(round(float(longitude), 6))
         self._latitude = str(round(float(latitude), 6))
-        self.radius = radius
+        self._radius = str(round(float(latitude), 6))
         self._api = api
 
         if session:
             self._api.session = session
 
-    def get_messages(self)
+
+    def get_messages(self) -> List[KrisinformationMessage]:
+        """Returns a list of messages"""
+        json_data = self._api.get_messages_api()
+        return _get_messages(json_data, self._longitude, self._latitude, self._radius)
+
+    async def async_get_messages(self) -> List[KrisinformationMessage]:
+        """Returns a list of messages"""
+        json_data = await self._api.async_get_messages_api()
+        return _get_messages(json_data, self._longitude, self._latitude, self._radius)
+
+def _get_messages(api_result: dict, longitude: str, latitude: str, radius: str) -> List[KrisinformationMessage]:
+    """Converts results from API to KrisinformationMessage list"""
+    messages = []
+
+    for element in api_result:
+        distance = None
+        within_range = False
+        areas = []
+
+        for area in enumerate(element['Area']):
+            areas.append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
+            distance = _calculate_distance(longitude, latitude, coords = area['Coordinate'])
+            if float(distance) < float(radius):
+                within_range = True
+
+        if within_range:
+            id = element['Identifier']
+            push_message = element['PushMessage']
+            updated = element['Updated']
+            published = element['Published']
+            headline = element['Headline']
+            preamble = element['Preamble']
+            body_text = element['BodyText']
+            web = element['Web']
+            language = element['Language']
+            event = element['Event']
+            sender_name = element['SenderName']
+            links = []
+            for link in enumerate(element['BodyLinks']):
+                links.append(link['Url'])
+            source_id = element['SourceID']
+
+            message = \
+                KrisinformationMessage(id, push_message, updated, published,
+                headline, preamble, body_text, web, language,
+                event, sender_name, source_id, area, links)
+
+            messages.append(message)
+            
+def _calculate_distance(longitude: str, latitude: str, coords):
+    coords = coords.split()
+    coords = coords[0].split(',')
+    elon = coords[0]
+    elat = coords[1]
+    
+    #Convert coordinates to radians
+    elat2 = radians(float(elat))
+    slat2 = radians(float(latitude))
+    elon2 = radians(float(elon))
+    slon2 = radians(float(longitude))
+    
+    #Calculate the distance between them
+    dist = 6371.01 * acos(sin(slat2)*sin(elat2) + cos(slat2)*cos(elat2)*cos(slon2 - elon2))
+
+    return dist
