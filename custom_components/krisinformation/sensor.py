@@ -33,7 +33,7 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 _LOGGER = logging.getLogger(__name__)
 
