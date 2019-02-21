@@ -1,9 +1,11 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg?style=for-the-badge)
 
 
-[![Version](https://img.shields.io/badge/version-0.0.4-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.0.5-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
 
 [![maintainer](https://img.shields.io/badge/maintainer-Isabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
+
+## Version 0.0.5 contains changes according to the new component scheme released with v.0.88 of Home Assistant. 0.0.4 works with < 0.88.
 
 # sensor.krisinformation
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
