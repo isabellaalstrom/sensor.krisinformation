@@ -5,7 +5,7 @@
 
 [![maintainer](https://img.shields.io/badge/maintainer-Isabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
 
-## Version 0.0.6 contains changes according to the new component scheme released with v.0.88 of Home Assistant. 0.0.5 works with < 0.88.
+## Version 0.0.6 contains changes according to the new component scheme released with v.0.88 of Home Assistant.
 
 # sensor.krisinformation
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
@@ -21,7 +21,8 @@ This component is supported by [Custom updater and Tracker card](https://github.
 
 ## Installation:
 
-1. Install this component by copying to your `/custom_components/sensor/` folder.
+1. Install this component by creating a `custom_components` folder in the same folder as your configuration.yaml is, if you don't already have one.
+2. Inside that folder, create another folder named `krisinformation`. Put the `sensor.py` file in there (if you copy and paste the code, make sure you do it from the [raw version](https://raw.githubusercontent.com/isabellaalstrom/sensor.krisinformation/master/custom_components/krisinformation/sensor.py) of the file).
 2. Add the code to your `configuration.yaml` using the config options below.
 3. **You will need to restart after installation for the component to start working.**
 
@@ -32,7 +33,7 @@ This component is supported by [Custom updater and Tracker card](https://github.
 key | type | description
 :--- | :--- | :---
 **platform (Required)** | string | `krisinformation`
-**latitude (Required)** | sring | The latitude of the position from which the sensor should look for messages.
+**latitude (Required)** | string | The latitude of the position from which the sensor should look for messages.
 **longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
 **name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
@@ -55,6 +56,7 @@ sensor:
 ## Usage
 
 **Example automation for getting a notification when the sensor has an alert:**
+Make sure you change the sensor name if you didn't use the default name.
 
 ```yaml
 automation:
@@ -68,7 +70,7 @@ automation:
       - service: notify.my_phone
         data_template:
           message: >
-            {{states.sensor.krisinformation_stockholm.attributes.messages[0].Headline}} - {{states.sensor.krisinformation_stockholm.attributes.messages[0].Message}} {{states.sensor.krisinformation_stockholm.attributes.messages[0].Web}}
+            {{states.sensor.krisinformation.attributes.messages[0].Headline}} - {{states.sensor.krisinformation.attributes.messages[0].Message}} {{states.sensor.krisinformation.attributes.messages[0].Web}}
 ```
 
 Like my work and want to say thanks? Do it here:
