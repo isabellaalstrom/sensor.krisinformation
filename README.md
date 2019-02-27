@@ -1,11 +1,13 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg?style=for-the-badge)
 
 
-[![Version](https://img.shields.io/badge/version-0.0.6-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.0.7-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
 
 [![maintainer](https://img.shields.io/badge/maintainer-Isabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
 
-## Version 0.0.6 contains changes according to the new component scheme released with v.0.88 of Home Assistant.
+
+
+### Version 0.0.7 introduces the option of specifying a county.
 
 # sensor.krisinformation
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
@@ -36,6 +38,7 @@ key | type | description
 **latitude (Required)** | string | The latitude of the position from which the sensor should look for messages.
 **longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
 **name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
+**county (Optional)** | string | The county from where the sensor should look for messages. Works in conjunction with coordinates. Get your county [from this list](https://sv.wikipedia.org/wiki/Sveriges_l%C3%A4n#Lista_%C3%B6ver_Sveriges_l%C3%A4n) and make sure spelling is correct. 
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
 
 
@@ -44,9 +47,9 @@ key | type | description
 ```yaml
 sensor:
   - platform: krisinformation
-    name: Krisinformation Stockholm
+    name: "Krisinformation Stockholm"
+    county: "Stockholms län"
     latitude: !secret lat_coord
-    
     longitude: !secret long_coord
     radius: 100
 ```
