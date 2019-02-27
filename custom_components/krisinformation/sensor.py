@@ -157,9 +157,10 @@ class KrisinformationAPI:
         for count, area in enumerate(element['Area']):
             message['Area'].append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
             
-            if area['Type'] == "County":
-                if self.county in area['Description']:
-                    is_in_county = True
+            if self.county is not None:
+                if area['Type'] == "County":
+                    if self.county in area['Description']:
+                        is_in_county = True
                 
             distance = self.calculate_distance(coords = area['Coordinate'])
             if float(distance) < float(self.radius):
