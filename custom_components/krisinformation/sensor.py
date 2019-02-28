@@ -33,17 +33,20 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Krisinformation'
+
+CONF_COUNTY = 'county'
 
 SCAN_INTERVAL = timedelta(minutes=5)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_RADIUS, default=50) : cv.positive_int,
+    vol.Optional(CONF_COUNTY) : cv.string,
     vol.Required(CONF_LATITUDE): cv.latitude,
     vol.Required(CONF_LONGITUDE): cv.longitude
 })
@@ -55,8 +58,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     latitude = config.get(CONF_LATITUDE)
     longitude = config.get(CONF_LONGITUDE)
     radius = config.get(CONF_RADIUS)
+    county = config.get(CONF_COUNTY)
 
-    api = KrisinformationAPI(longitude, latitude, radius)
+    api = KrisinformationAPI(longitude, latitude, county, radius)
 
     add_entities([KrisinformationSensor(api, name)], True)
 
@@ -107,11 +111,12 @@ class KrisinformationSensor(Entity):
 class KrisinformationAPI:
     """Get the latest data and update the states."""
 
-    def __init__(self, longitude, latitude, radius):
+    def __init__(self, longitude, latitude, county, radius):
         """Initialize the data object."""
         
         self.slat = latitude
         self.slon = longitude
+        self.county = county
         self.radius = radius
         self.attributes = {}
         self.attributes["messages"] = []
@@ -147,14 +152,21 @@ class KrisinformationAPI:
         
         distance = None
         within_range = False
+        is_in_county = False
         
         for count, area in enumerate(element['Area']):
             message['Area'].append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
+            
+            if self.county is not None:
+                if area['Type'] == "County":
+                    if self.county.lower() in area['Description'].lower():
+                        is_in_county = True
+                
             distance = self.calculate_distance(coords = area['Coordinate'])
             if float(distance) < float(self.radius):
                 within_range = True
         
-        if within_range:
+        if within_range or is_in_county:
             message['ID'] = element['Identifier']
             message['Message'] = element['PushMessage']
             message['Updated'] = element['Updated']
