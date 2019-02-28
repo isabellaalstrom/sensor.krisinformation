@@ -7,7 +7,7 @@
 
 
 
-### Version 0.0.7 introduces the option of specifying a county.
+### Version 0.0.7 introduces the option of also specifying a county, so that you get messages for the whole county, even if the radius is too small.
 
 # sensor.krisinformation
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
