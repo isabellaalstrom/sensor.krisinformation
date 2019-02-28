@@ -159,7 +159,7 @@ class KrisinformationAPI:
             
             if self.county is not None:
                 if area['Type'] == "County":
-                    if self.county in area['Description']:
+                    if self.county.lower() in area['Description'].lower():
                         is_in_county = True
                 
             distance = self.calculate_distance(coords = area['Coordinate'])
