@@ -1,0 +1,18 @@
+name: Emergency alerts from .krisinformation.se
+description: A custom component for emergency information from Swedish authorities
+type: component
+keywords:
+  - krisinformation.de
+  - sweden
+  - swedish
+  - emergency
+  - krisis
+  - crisis
+author:
+  name: Isabella Gross Alström
+  email: isabella.alstrom@gmail.com
+  homepage: https://isabellaalstrom.github.io/
+license: MIT
+files:
+  - custom_components/krisinformation/__init__.py
+  - custom_components/krisinformation/sensor.py
