@@ -38,20 +38,22 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Krisinformation'
 
 CONF_COUNTY = 'county'
+CONF_COUNTRY = 'country'
 
 SCAN_INTERVAL = timedelta(minutes=5)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    vol.Optional(CONF_NAME): cv.string,
     vol.Optional(CONF_RADIUS, default=50) : cv.positive_int,
     vol.Optional(CONF_COUNTY) : cv.string,
+    vol.Optional(CONF_COUNTRY) : cv.string,
     vol.Optional(CONF_LATITUDE): cv.latitude,
     vol.Optional(CONF_LONGITUDE): cv.longitude
 })
@@ -64,8 +66,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     longitude = config.get(CONF_LONGITUDE) if config.get(CONF_LONGITUDE) is not None else hass.config.longitude
     radius = config.get(CONF_RADIUS)
     county = config.get(CONF_COUNTY)
+    country = config.get(CONF_COUNTRY)
+    if config.get(CONF_COUNTRY) is not None and config.get(CONF_NAME) is None:
+        name = f"{DEFAULT_NAME} {country}"
+    elif config.get(CONF_NAME) is None:
+        name = DEFAULT_NAME
 
-    api = KrisinformationAPI(longitude, latitude, county, radius)
+
+    api = KrisinformationAPI(longitude, latitude, county, radius, country)
 
     add_entities([KrisinformationSensor(api, name)], True)
 
@@ -116,13 +124,14 @@ class KrisinformationSensor(Entity):
 class KrisinformationAPI:
     """Get the latest data and update the states."""
 
-    def __init__(self, longitude, latitude, county, radius):
+    def __init__(self, longitude, latitude, county, radius, country):
         """Initialize the data object."""
         
         self.slat = latitude
         self.slon = longitude
         self.county = county
         self.radius = radius
+        self.country = country
         self.attributes = {}
         self.attributes["messages"] = []
         self.data = {}
@@ -158,20 +167,27 @@ class KrisinformationAPI:
         distance = None
         within_range = False
         is_in_county = False
+        is_in_country = False
         
         for count, area in enumerate(element['Area']):
             message['Area'].append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
             
-            if self.county is not None:
-                if area['Type'] == "County":
-                    if self.county.lower() in area['Description'].lower():
-                        is_in_county = True
+            if self.country is not None:
+                if area['Type'] == 'Country':
+                    if self.country.lower() in area['Description'].lower():
+                        is_in_country = True
                 
-            distance = self.calculate_distance(coords = area['Coordinate'])
-            if float(distance) < float(self.radius):
-                within_range = True
+            else:
+                if self.county is not None:
+                    if area['Type'] == 'County':
+                        if self.county.lower() in area['Description'].lower():
+                            is_in_county = True
+                    
+                distance = self.calculate_distance(coords = area['Coordinate'])
+                if float(distance) < float(self.radius):
+                    within_range = True
         
-        if within_range or is_in_county:
+        if within_range or is_in_county or is_in_country:
             message['ID'] = element['Identifier']
             message['Message'] = element['PushMessage']
             message['Updated'] = element['Updated']
