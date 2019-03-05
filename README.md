@@ -1,13 +1,13 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg?style=for-the-badge)
 
 
-[![Version](https://img.shields.io/badge/version-0.0.7-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.0.8-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
 
 [![maintainer](https://img.shields.io/badge/maintainer-Isabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
 
 
 
-### Version 0.0.7 introduces the option of also specifying a county, so that you get messages for the whole county, even if the radius is too small.
+### Version 0.0.7 introduced the option of also specifying a county, so that you get messages for the whole county, even if the radius is too small.
 
 # sensor.krisinformation
 Component to get Krisinformation for [Home Assistant](https://www.home-assistant.io/).
@@ -35,14 +35,20 @@ This component is supported by [Custom updater and Tracker card](https://github.
 key | type | description
 :--- | :--- | :---
 **platform (Required)** | string | `krisinformation`
-**latitude (Required)** | string | The latitude of the position from which the sensor should look for messages.
-**longitude (Required)** | string | The longitude of the position from which the sensor should look for messages.
+**latitude (Optional)** | string | Default is the coordinates for your home zone. The latitude of the position from which the sensor should look for messages.
+**longitude (Optional)** | string | Default is the coordinates for your home zone. The longitude of the position from which the sensor should look for messages.
 **name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
 **county (Optional)** | string | The county from where the sensor should look for messages. Works in conjunction with coordinates. Get your county [from this list](https://sv.wikipedia.org/wiki/Sveriges_l%C3%A4n#Lista_%C3%B6ver_Sveriges_l%C3%A4n) and make sure spelling is correct. 
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
 
 
-**Example configuration.yaml:**
+**Example minimal configuration.yaml**
+```yaml
+sensor:
+  - platform: krisinformation
+```
+
+**Example advanced configuration.yaml:**
 
 ```yaml
 sensor:
