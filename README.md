@@ -35,17 +35,24 @@ This component is supported by [Custom updater and Tracker card](https://github.
 key | type | description
 :--- | :--- | :---
 **platform (Required)** | string | `krisinformation`
-**latitude (Optional)** | string | Default is the coordinates for your home zone. The latitude of the position from which the sensor should look for messages.
-**longitude (Optional)** | string | Default is the coordinates for your home zone. The longitude of the position from which the sensor should look for messages.
-**name (Optional)** | string | Custom name for the sensor. Default `krisinformation`
+**latitude (Optional)** | string | The latitude of the position from which the sensor should look for messages. Default `home zone latitude`
+**longitude (Optional)** | string | The longitude of the position from which the sensor should look for messages. Default `home zone longitude`
+**name (Optional)** | string | Custom name for the sensor. Default `krisinformation`. (If country is configured the default will be `sensor.krisinformation_sverige` for `country: 'Sverige'`.)
 **county (Optional)** | string | The county from where the sensor should look for messages. Works in conjunction with coordinates. Get your county [from this list](https://sv.wikipedia.org/wiki/Sveriges_l%C3%A4n#Lista_%C3%B6ver_Sveriges_l%C3%A4n) and make sure spelling is correct. 
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
-
+**country (Optional)** | string | Configuring this option will make the sensor **only** take country wide alerts.
 
 **Example minimal configuration.yaml**
 ```yaml
 sensor:
   - platform: krisinformation
+```
+
+**Example country alerts configuration.yaml**
+```yaml
+sensor:
+  - platform: krisinformation
+    country: 'Sverige'
 ```
 
 **Example advanced configuration.yaml:**
