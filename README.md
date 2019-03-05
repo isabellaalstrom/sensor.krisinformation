@@ -91,7 +91,7 @@ Like my work and want to say thanks? Do it here:
 <a href="https://www.buymeacoffee.com/iq1f96D" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 
-##Changelog
+## Changelog
 
 0.0.9 - Added option for a country specific sensor
 0.0.8 - Made latitude and longitude optional now getting coords from Home Assistant base configuration if not specified.
