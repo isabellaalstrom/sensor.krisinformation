@@ -93,6 +93,6 @@ Like my work and want to say thanks? Do it here:
 
 ## Changelog
 
-0.0.9 - Added option for a country specific sensor
-0.0.8 - Made latitude and longitude optional now getting coords from Home Assistant base configuration if not specified.
-0.0.7 - Added option to configury county in sensor
+- 0.0.9 - Added option for a country specific sensor
+- 0.0.8 - Made latitude and longitude optional now getting coords from Home Assistant base configuration if not specified.
+- 0.0.7 - Added option to configury county in sensor
