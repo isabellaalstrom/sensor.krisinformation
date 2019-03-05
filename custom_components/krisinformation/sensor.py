@@ -4,13 +4,18 @@ Support for getting data from krisinformation.se.
 
 Data is fetched from https://api.krisinformation.se/v1/capmessage?format=json
 
-
 Example configuration
+
+sensor:
+  - platform: krisinformation
+
+Example advanced configuration
 
 sensor:
   - platform: krisinformation
     latitude: !secret lat_coord
     longitude: !secret long_coord
+    county: 'Stockholms län'
     radius: 100
 """
 import logging
@@ -33,7 +38,7 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,16 +52,16 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_RADIUS, default=50) : cv.positive_int,
     vol.Optional(CONF_COUNTY) : cv.string,
-    vol.Required(CONF_LATITUDE): cv.latitude,
-    vol.Required(CONF_LONGITUDE): cv.longitude
+    vol.Optional(CONF_LATITUDE): cv.latitude,
+    vol.Optional(CONF_LONGITUDE): cv.longitude
 })
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Krisinformation sensor."""
     name = config.get(CONF_NAME)
-    latitude = config.get(CONF_LATITUDE)
-    longitude = config.get(CONF_LONGITUDE)
+    latitude = config.get(CONF_LATITUDE) if config.get(CONF_LATITUDE) is not None else hass.config.latitude
+    longitude = config.get(CONF_LONGITUDE) if config.get(CONF_LONGITUDE) is not None else hass.config.longitude
     radius = config.get(CONF_RADIUS)
     county = config.get(CONF_COUNTY)
 
