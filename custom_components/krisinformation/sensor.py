@@ -38,7 +38,7 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor.rest import RestData
 
-__version__ = '0.0.9'
+__version__ = '0.0.10'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     county = config.get(CONF_COUNTY)
     country = config.get(CONF_COUNTRY)
     if config.get(CONF_COUNTRY) is not None and config.get(CONF_NAME) is None:
-        name = f"{DEFAULT_NAME} {country}"
+        name = "{} {}".format(DEFAULT_NAME, country)
     elif config.get(CONF_NAME) is None:
         name = DEFAULT_NAME
 
