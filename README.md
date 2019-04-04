@@ -1,7 +1,7 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg?style=for-the-badge)
 
 
-[![Version](https://img.shields.io/badge/version-0.0.10-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg?style=for-the-badge)](#) [![maintained](https://img.shields.io/maintenance/yes/2019.svg?style=for-the-badge)](#)
 
 [![maintainer](https://img.shields.io/badge/maintainer-Isabella%20Alström%20%40isabellaalstrom-blue.svg?style=for-the-badge)](#)
 
@@ -92,7 +92,7 @@ Like my work and want to say thanks? Do it here:
 
 
 ## Changelog
-
+- 1.0.0 - **Breaking change**. Fix for migration of components in 0.91 of Home Assistant.
 - 0.0.10 - Added fix for backwards compatibility for older python versions.
 - 0.0.9 - Added option for a country specific sensor
 - 0.0.8 - Made latitude and longitude optional now getting coords from Home Assistant base configuration if not specified.
