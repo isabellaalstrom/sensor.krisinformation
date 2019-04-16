@@ -92,8 +92,4 @@ Like my work and want to say thanks? Do it here:
 
 
 ## Changelog
-- 1.0.0 - **Breaking change**. Fix for migration of components in 0.91 of Home Assistant.
-- 0.0.10 - Added fix for backwards compatibility for older python versions.
-- 0.0.9 - Added option for a country specific sensor
-- 0.0.8 - Made latitude and longitude optional now getting coords from Home Assistant base configuration if not specified.
-- 0.0.7 - Added option to configury county in sensor
+[Changes](https://github.com/isabellaalstrom/sensor.krisinformation/blob/master/CHANGELOG.md)
