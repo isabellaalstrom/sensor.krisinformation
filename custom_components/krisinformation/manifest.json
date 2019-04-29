@@ -1,5 +1,5 @@
 {
-  "domain": "sensor",
+  "domain": "krisinformation",
   "name": "Krisinformation",
   "documentation": "https://github.com/isabellaalstrom/sensor.krisinformation",
   "dependencies": [],
