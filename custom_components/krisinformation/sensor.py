@@ -17,10 +17,12 @@ sensor:
     longitude: !secret long_coord
     county: 'Stockholms län'
     radius: 100
+    expiry:
+      days: 2     # Default is 30
 """
 import logging
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime
 from math import radians, sin, cos, acos
 import requests
 
@@ -38,7 +40,7 @@ from homeassistant.util import Throttle
 import homeassistant.util.dt as dt_util
 from homeassistant.components.rest.sensor import RestData
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,6 +48,7 @@ DEFAULT_NAME = 'Krisinformation'
 
 CONF_COUNTY = 'county'
 CONF_COUNTRY = 'country'
+CONF_EXPIRY = 'expiry'
 
 SCAN_INTERVAL = timedelta(minutes=5)
 
@@ -55,9 +58,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_COUNTY) : cv.string,
     vol.Optional(CONF_COUNTRY) : cv.string,
     vol.Optional(CONF_LATITUDE): cv.latitude,
-    vol.Optional(CONF_LONGITUDE): cv.longitude
+    vol.Optional(CONF_LONGITUDE): cv.longitude,
+    vol.Optional(CONF_EXPIRY, default=timedelta(days=30)): cv.time_period_dict
 })
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Krisinformation sensor."""
@@ -71,9 +74,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         name = "{} {}".format(DEFAULT_NAME, country)
     elif config.get(CONF_NAME) is None:
         name = DEFAULT_NAME
+    expiry = config.get(CONF_EXPIRY) if config.get(CONF_EXPIRY) is not '' else timedelta(days=30)
 
-
-    api = KrisinformationAPI(longitude, latitude, county, radius, country)
+    api = KrisinformationAPI(longitude, latitude, county, radius, country, expiry)
 
     add_entities([KrisinformationSensor(api, name)], True)
 
@@ -124,14 +127,15 @@ class KrisinformationSensor(Entity):
 class KrisinformationAPI:
     """Get the latest data and update the states."""
 
-    def __init__(self, longitude, latitude, county, radius, country):
+    def __init__(self, longitude, latitude, county, radius, country, expiry):
         """Initialize the data object."""
-        
+
         self.slat = latitude
         self.slon = longitude
         self.county = county
         self.radius = radius
         self.country = country
+        self.expiry = expiry
         self.attributes = {}
         self.attributes["messages"] = []
         self.data = {}
@@ -151,43 +155,50 @@ class KrisinformationAPI:
             self.data['state'] = "No new messages"
             self.attributes["messages"] = []
             for index, element in enumerate(jsondata):
-                self.make_object(index = index, element = element)
-            
+                self.make_object(index=index, element=element)
+
             self.data['attributes'] = self.attributes
             self.available = True
         except Exception as e:
             _LOGGER.error("Unable to fetch data from Krisinformation.")
             _LOGGER.error(str(e))
             self.available = False
-            
+
     def make_object(self, index, element):
         message = {}
         message['Area'] = []
-        
+
         distance = None
         within_range = False
         is_in_county = False
         is_in_country = False
-        
+        is_recent = False
+
         for count, area in enumerate(element['Area']):
-            message['Area'].append({ "Type" : area['Type'], "Description" : area['Description'], "Coordinate" : area['Coordinate']})
-            
+            message['Area'].append({"Type" : area['Type'], \
+                "Description" : area['Description'], "Coordinate" : area['Coordinate']})
+
             if self.country is not None:
                 if area['Type'] == 'Country':
                     if self.country.lower() in area['Description'].lower():
                         is_in_country = True
-                
+
             else:
                 if self.county is not None:
                     if area['Type'] == 'County':
                         if self.county.lower() in area['Description'].lower():
                             is_in_county = True
-                    
-                distance = self.calculate_distance(coords = area['Coordinate'])
+
+                distance = self.calculate_distance(coords=area['Coordinate'])
                 if float(distance) < float(self.radius):
                     within_range = True
-        
-        if within_range or is_in_county or is_in_country:
+
+        message_age = (datetime.now() - datetime.strptime(element['Updated'], \
+            '%Y-%m-%dT%H:%M:%S%z').replace(tzinfo=None))
+        if  message_age < self.expiry:
+            is_recent = True
+
+        if (within_range or is_in_county or is_in_country) and is_recent:
             message['ID'] = element['Identifier']
             message['Message'] = element['PushMessage']
             message['Updated'] = element['Updated']
