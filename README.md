@@ -37,7 +37,7 @@ key | type | description
 **name (Optional)** | string | Custom name for the sensor. Default `krisinformation`. (If country is configured the default will be `sensor.krisinformation_sverige` for `country: 'Sverige'`.)
 **county (Optional)** | string | The county from where the sensor should look for messages. Works in conjunction with coordinates. Get your county [from this list](https://sv.wikipedia.org/wiki/Sveriges_l%C3%A4n#Lista_%C3%B6ver_Sveriges_l%C3%A4n) and make sure spelling is correct. 
 **radius (Optional)** | number | The radius in km from your position that the sensor should look for messages. Default `50`
-**country (Optional)** | string | Configuring this option will make the sensor **only** take country wide alerts.
+**country (Optional)** | string | Configuring this option will make the sensor **only** take country wide alerts. This setting does *not* give you all alerts for all regions.
 
 **Example minimal configuration.yaml**
 ```yaml
