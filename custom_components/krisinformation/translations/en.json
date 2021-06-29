@@ -1,0 +1,28 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Krisinformation",
+                "description": "Enter a friendly name for your Krisinformation integration to get started using it.",
+                "data": {
+                    "name": "Integration friendly name"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "user": {
+                "title": "Krisinformation",
+                "description": "Change integration parameters if you need to override from default values in Home Assistant. More info on https://github.com/isabellaalstrom/sensor.krisinformation",
+                "data": {
+                    "latitude": "Latitude",
+                    "longitude": "Longitude",
+                    "radius": "Radius",
+                    "county": "County",
+                    "country": "Country"
+				}
+            }
+        }
+    }
+}
