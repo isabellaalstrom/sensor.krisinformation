@@ -1,0 +1,10 @@
+{
+    "name": "Krisinformation",
+    "content_in_root": false,
+    "zip_release": false,
+    "render_readme": false,
+    "domains": ["sensor","binary_sensor"],
+    "country": "SE",
+    "homeassistant": "0.92",
+    "iot_class": "cloud_poll"
+}

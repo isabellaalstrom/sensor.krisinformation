@@ -15,4 +15,17 @@ author:
 license: MIT
 files:
   - custom_components/krisinformation/__init__.py
+  - custom_components/krisinformation/api.py
+  - custom_components/krisinformation/binary_sensor.py
+  - custom_components/krisinformation/config_flow.py
+  - custom_components/krisinformation/config_schema.py
+  - custom_components/krisinformation/const.py
+  - custom_components/krisinformation/device.py  
   - custom_components/krisinformation/sensor.py
+  - custom_components/krisinformation/system_health.py
+  - custom_components/krisinformation/translations/en.json
+  - custom_components/krisinformation/kriscom/__init__.json
+  - custom_components/krisinformation/kriscom/const.json
+  - custom_components/krisinformation/kriscom/exceptions.json
+  - custom_components/krisinformation/kriscom/kriscom.json
+  

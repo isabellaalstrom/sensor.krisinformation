@@ -1,0 +1,2 @@
+refresh_data:
+  description: Communicated with the Krisinformation API and instantly updates the sensor data
